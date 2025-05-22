@@ -1,0 +1,20 @@
+2025-05-23 03:58:05,249 - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 03:58:05,949 - WARNING -  * Debugger is active!
+2025-05-23 03:58:05,957 - INFO -  * Debugger PIN: 734-829-495
+2025-05-23 03:58:05,993 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-05-23 03:58:09,656 - INFO -  * Detected change in 'C:\\Users\\vipla\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\csv.py', reloading
+2025-05-23 03:58:09,674 - INFO -  * Detected change in 'C:\\Users\\vipla\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\re\\__init__.py', reloading
+2025-05-23 03:58:10,138 - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 03:58:11,005 - WARNING -  * Debugger is active!
+2025-05-23 03:58:11,010 - INFO -  * Debugger PIN: 734-829-495
+2025-05-23 03:58:11,057 - INFO -  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2025-05-23 03:58:14,917 - INFO - 127.0.0.1 - - [23/May/2025 03:58:14] "GET / HTTP/1.1" 200 -
+2025-05-23 03:58:14,962 - INFO - 127.0.0.1 - - [23/May/2025 03:58:14] "[36mGET /static/styles.css?v=1 HTTP/1.1[0m" 304 -
+2025-05-23 03:58:14,972 - INFO - 127.0.0.1 - - [23/May/2025 03:58:14] "[36mGET /static/chatbot-logo.svg?v=1 HTTP/1.1[0m" 304 -
+2025-05-23 03:58:14,973 - INFO - 127.0.0.1 - - [23/May/2025 03:58:14] "[36mGET /static/script.js?v=1 HTTP/1.1[0m" 304 -
+2025-05-23 03:58:15,062 - INFO - 127.0.0.1 - - [23/May/2025 03:58:15] "[36mGET /static/favicon.png?v=3 HTTP/1.1[0m" 304 -
+2025-05-23 03:58:25,069 - INFO - User 91cea8130f3dd902d671d936ba1f4eca: How can I contact you?
+2025-05-23 03:58:25,070 - INFO - 127.0.0.1 - - [23/May/2025 03:58:25] "POST /chat HTTP/1.1" 200 -
+2025-05-23 03:58:25,074 - INFO - 127.0.0.1 - - [23/May/2025 03:58:25] "[36mGET /static/user-logo.svg?v=1 HTTP/1.1[0m" 304 -
+2025-05-23 03:58:27,363 - INFO - User 91cea8130f3dd902d671d936ba1f4eca: I want to talk to someone
+2025-05-23 03:58:27,364 - INFO - 127.0.0.1 - - [23/May/2025 03:58:27] "POST /chat HTTP/1.1" 200 -
