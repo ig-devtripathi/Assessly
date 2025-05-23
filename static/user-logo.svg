@@ -1,0 +1,19 @@
+
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img">
+  <style>
+    :root {
+      --user-base: #CED4DA;
+      --user-outline: #4A4E69;
+      --user-glow: #64FFDA;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --user-base: #2B2F36;
+        --user-outline: #9DA2B0;
+      }
+    }
+  </style>
+  <circle cx="100" cy="100" r="90" fill="var(--user-base)" stroke="var(--user-outline)" stroke-width="4"/>
+  <circle cx="100" cy="80" r="25" fill="var(--user-glow)" />
+  <path d="M60 140 Q100 110 140 140 Q100 170 60 140" fill="var(--user-glow)" opacity="0.5"/>
+</svg>
