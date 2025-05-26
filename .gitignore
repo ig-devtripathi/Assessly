@@ -1,0 +1,5 @@
+.env
+contacts.csv
+errors.log
+__pycache__/
+*.pyc

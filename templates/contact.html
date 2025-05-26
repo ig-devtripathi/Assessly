@@ -1,0 +1,155 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Assessly</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="contact-container">
+        <nav class="contact-nav">
+            <div class="nav-logo">Assessly</div>
+            <div class="nav-toggle" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <span class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></span>
+        </nav>
+        <div class="contact-content">
+            <h1 class="contact-title animate__animated animate__fadeInDown">Contact Us</h1>
+            <p>Need assistance with HR assessments? Get in touch with us via email, phone, or chat with our AI assistant, Assessly.</p>
+            <div class="contact-details">
+                <div class="contact-item animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <h3>Email</h3>
+                    <p><a href="mailto:info@uptoskills.com">info@uptoskills.com</a></p>
+                </div>
+                <div class="contact-item animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <i class="fas fa-phone contact-icon"></i>
+        
+                </div>
+                <div class="contact-item animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                    <i class="fas fa-map-marker-alt contact-icon"></i>
+                </div>
+            </div>
+            <button class="get-started-btn" onclick="toggleChatbot()">Chat with Assessly</button>
+        </div>
+        <div class="contact-footer">
+            <div class="footer-content">
+                <h3>Assessly</h3>
+                <p>Bagdola, Sector 8 Dwarka, Palam, New Delhi</p>
+                <p>Phone: <a href="tel:+91-7417269505">+91-7417269505</a></p>
+                <p>Email: <a href="mailto:info@uptoskills.com">info@uptoskills.com</a></p>
+                <p>© 2025 Assessly. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://x.com/skillsupto" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://in.linkedin.com/company/uptoskills" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://uptoskills.com" target="_blank"><i class="fas fa-globe"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="assessly-btn" onclick="toggleChatbot()">Assessly</button>
+    <div class="chatbot-container" id="chatbot-container">
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <img src="/static/chatbot-logo.svg" class="header-logo" alt="Assessly Logo">
+                <span>Assessly</span>
+            </div>
+            <span class="close-btn" onclick="toggleChatbot()">✖</span>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-message bot-message initial-message">
+                <img src="/static/chatbot-logo.svg?v=1" class="logo" alt="Assessly Logo">
+                <div class="message-content">
+                    Hi! I'm Assessly, your AI assistant. Let's get started—ask me anything or say "I want to talk to someone" to share your details!
+                </div>
+            </div>
+        </div>
+        <div class="quick-replies initial-message">
+            <button class="quick-reply-btn" onclick="sendQuickReply('I want to talk to someone')">Talk to Someone</button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('What are your working hours')">Working Hours</button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Where is your office located')">Office Location</button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('How does test creation work')">Test Creation</button>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+    <script>
+        function toggleChatbot() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            chatbotContainer.classList.toggle('active');
+        }
+
+        function toggleNav() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.querySelector('.theme-toggle i');
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                themeToggle.classList.remove('fa-moon');
+                themeToggle.classList.add('fa-sun');
+            } else {
+                themeToggle.classList.remove('fa-sun');
+                themeToggle.classList.add('fa-moon');
+            }
+        }
+    </script>
+</body>
+</html>
