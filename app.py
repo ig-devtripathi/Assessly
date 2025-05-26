@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from flask import Flask, request, jsonify, session, send_from_directory, render_template
+=======
+from flask import Flask, request, jsonify, session, send_from_directory
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
 import csv
 import os
 import re
@@ -9,6 +13,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import time
 
+<<<<<<< HEAD
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.urandom(24)
 
@@ -21,6 +26,13 @@ logging.basicConfig(
         logging.StreamHandler()  # This ensures logs are also sent to stdout for Render
     ]
 )
+=======
+app = Flask(__name__, static_folder='static')
+app.secret_key = os.urandom(24)
+
+logging.basicConfig(filename='errors.log', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -47,12 +59,15 @@ intents = {
     "system_info": [r"what\s*(is|are)\s*(ur|your|the)\s*(system|bot|platform)(\s*(for|do(es)?))?", r"platform\s*details", r"about\s*(system|platform)"]
 }
 
+<<<<<<< HEAD
 # General keywords for queries like "what can you do"
 general_keywords = [
     "what can you do", "tell me about yourself", "who are you", "what are you", "introduce yourself",
     "what do you do", "how can you help", "what is your purpose", "what can you help with"
 ]
 
+=======
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
 def clean_response(text):
     """Remove Markdown and format for plain text."""
     text = re.sub(r'\*{1,2}([^\*]+)\*{1,2}', r'\1', text)  # Remove **bold** and *italic*
@@ -98,6 +113,7 @@ def query_gemini_api(user_message, user_id, intent=None):
         try:
             history = user_conversations[user_id][-5:]
             system_prompt = (
+<<<<<<< HEAD
                 "You are Assessly, a friendly and conversational AI assistant for an AI Assessment Platform for HR, assisting HR professionals and candidates. "
                 "The platform enables HR to create custom tests (MCQs, coding, aptitude), offers a candidate test portal with autosave and resume features, "
                 "and includes proctoring with camera monitoring, facial recognition, and behavior tracking. "
@@ -106,6 +122,17 @@ def query_gemini_api(user_message, user_id, intent=None):
                 "After answering unrelated queries, gently guide the user back to HR topics by suggesting they ask about test creation, proctoring, or the test portal. "
                 "Example: If asked 'Tell me a joke', respond with a joke and then say, 'Speaking of fun, want to know how to make hiring fun with our test creation tools?' "
                 "Use conversation history for context: " + "; ".join([f"User: {msg['user']}, Bot: {msg['bot']}" for msg in history]) + "."
+=======
+                "You are Assessly, a professional customer support AI for an AI Assessment Platform for HR, assisting HR professionals and candidates. "
+                "The platform enables HR to create custom tests (MCQs, coding, aptitude), offers a candidate test portal with autosave and resume features, "
+                "and includes proctoring with camera monitoring, facial recognition, and behavior tracking. "
+                "Provide concise, accurate, and professional answers tailored to the platform in plain text, avoiding Markdown, bullet points, or special formatting. "
+                f"{'Focus on ' + intent + ' features if relevant.' if intent else 'Interpret vague or general queries intelligently, relating them to the platform.'} "
+                "For example, if asked about 'the system' or 'what the system is for,' describe the AI Assessment Platform's purpose and features in a single paragraph. "
+                "Use conversation history for context: " + "; ".join([f"User: {msg['user']}, Bot: {msg['bot']}" for msg in history]) + ". "
+                "If the query is unrelated (e.g., weather), suggest asking about contact details, working hours, office location, "
+                "test creation, proctoring, or the test portal, or to share details for human support."
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
             )
             response = requests.post(
                 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
@@ -119,7 +146,11 @@ def query_gemini_api(user_message, user_id, intent=None):
                         ]
                     }],
                     'generationConfig': {
+<<<<<<< HEAD
                         'maxOutputTokens': 150,
+=======
+                        'maxOutputTokens': 200,
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
                         'temperature': 0.7
                     }
                 },
@@ -161,6 +192,7 @@ def index():
         del user_states[session['user_id']]  # Reset state for new session
     return app.send_static_file('index.html')
 
+<<<<<<< HEAD
 @app.route('/contact')
 def contact():
     session['user_id'] = session.get('user_id', os.urandom(16).hex())
@@ -169,6 +201,8 @@ def contact():
         del user_states[session['user_id']]  # Reset state for new session
     return render_template('contact.html')
 
+=======
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
@@ -241,6 +275,7 @@ def chat():
             user_conversations[user_id].append({'user': user_message, 'bot': cleaned_answer})
             return jsonify({'response': cleaned_answer})
 
+<<<<<<< HEAD
     # Check for general queries like "what can you do"
     user_message_lower = user_message.lower()
     is_general_query = any(keyword in user_message_lower for keyword in general_keywords)
@@ -253,10 +288,23 @@ def chat():
     detected_intent = None
     for intent, patterns in intents.items():
         if any(re.search(pattern, user_message_lower) for pattern in patterns):
+=======
+    # Handle other queries
+    detected_intent = None
+    for intent, patterns in intents.items():
+        if any(re.search(pattern, user_message.lower()) for pattern in patterns):
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
             detected_intent = intent
             break
 
     response = query_gemini_api(user_message, user_id, detected_intent)
+<<<<<<< HEAD
+=======
+    if "Sorry" in response or "Error" in response:
+        if detected_intent == "system_info":
+            response = clean_response("Assessly’s AI Assessment Platform empowers HR to create custom tests like MCQs, coding, and aptitude challenges, provides a candidate portal with autosave and resume features, and ensures secure assessments with proctoring via camera monitoring and facial recognition. Ask about contact details, working hours, or specific features, or say 'I want to talk to someone'.")
+        user_conversations[user_id].append({'user': user_message, 'bot': response})
+>>>>>>> 5c8a5f949e056a57969828685d12992e5b50a717
     return jsonify({'response': response})
 
 if __name__ == '__main__':
