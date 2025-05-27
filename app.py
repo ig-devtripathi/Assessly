@@ -23,7 +23,7 @@ user_data = {}
 
 # Enhanced FAQ responses
 faq_responses = {
-    "what are your working hours": "Our working hours are Monday to Friday, 9 AM to 8 PM IST.",  # Updated to 9 AM to 8 PM
+    "what are your working hours": "Our working hours are Monday to Friday, 9 AM to 8 PM IST.",
     "where is your office located": "Our office is located at Bagdola, Sector 8 Dwarka, Palam, New Delhi.",
     "how does test creation work": "With Assessly, HR professionals can create custom tests using our AI-powered platform. You can define question types, set difficulty levels, and generate tests tailored to your needs.",
     "what is hr": "HR stands for Human Resources. It refers to the department in an organization responsible for managing employee-related processes like hiring, training, payroll, and ensuring a positive workplace environment.",
@@ -55,24 +55,23 @@ def contact():
 def chat():
     global user_data
     data = request.get_json()
-    user_message = data.get('message', '').strip()  # Removed .lower() to preserve case for AI queries
+    user_message = data.get('message', '').strip()
+    user_message_lower = user_message.lower()
 
     if not user_message:
         return jsonify({"response": "Please enter a message.", "type": "error"})
 
-    # Check for FAQ matches (case-insensitive)
-    user_message_lower = user_message.lower()
+    # FAQs
     for question, answer in faq_responses.items():
         if question in user_message_lower:
-            user_data = {}  # Reset user data if FAQ is triggered
+            user_data = {}
             return jsonify({"response": answer, "type": "bot"})
 
-    # Check for contact request
+    # HR contact flow
     if "talk to someone" in user_message_lower:
         user_data = {'name': None, 'email': None, 'phone': None}
         return jsonify({"response": "Sure, please provide your name.", "type": "bot"})
 
-    # Handle user details collection
     if user_data and user_data.get('name') is None:
         user_data['name'] = user_message
         return jsonify({"response": "Thanks, now please provide your email.", "type": "bot"})
@@ -88,13 +87,35 @@ def chat():
             return jsonify({"response": "Please provide a valid phone number.", "type": "error"})
         user_data['phone'] = user_message
         response = f"Thank you, {user_data['name']}! We've noted your details:\nEmail: {user_data['email']}\nPhone: {user_data['phone']}\nOur team will reach out to you soon!"
-        user_data = {}  # Reset user data after collection
+        user_data = {}
         return jsonify({"response": response, "type": "bot"})
 
-    # Use Gemini AI model for all other queries (HR or non-HR)
+    # Friendly answers to general HR-related introductions
+    general_queries = ["what can you do", "who are you", "what are you", "how can you help"]
+    if any(q in user_message_lower for q in general_queries):
+        return jsonify({
+            "response": "I'm Assessly 👩‍💼 — your AI-powered HR assistant! I can help with interview tips, test creation, candidate assessments, HR terms, and more. Just ask me anything in the HR space!",
+            "type": "bot"
+        })
+
+    # Soft filter for unrelated topics
+    off_topic = ['joke', 'weather', 'cricket', 'movie', 'game', 'bitcoin']
+    if any(word in user_message_lower for word in off_topic):
+        return jsonify({
+            "response": "I'm built to assist with hiring, HR, assessments, and workplace topics 😊. Ask me anything related to your career or recruitment!",
+            "type": "bot"
+        })
+
+    # Gemini fallback for other HR-like queries (e.g., strengths, interview help)
     try:
-        # Add instruction to keep response concise
-        prompt = f"{user_message}\n\nKeep the response concise and under 150 words."
+        prompt = (
+            "You are Assessly — a friendly, conversational, and intelligent AI assistant trained to help with everything HR-related. "
+            "You can help users understand how to create or take assessments, prepare for interviews, explain HR processes, share company info, and more. "
+            "You’re warm and helpful, capable of answering questions like 'What are your strengths?', 'Tell me about yourself', or 'What can you do?'. "
+            "If someone asks off-topic questions (like about weather, jokes, or cricket), gently guide them back to HR or career topics in a kind way.\n\n"
+            f"User: {user_message}\n\nKeep your tone friendly and conversational. Keep the response under 150 words."
+        )
+
         response = model.generate_content(
             prompt,
             generation_config=genai.types.GenerationConfig(
@@ -102,14 +123,14 @@ def chat():
             )
         )
         if response and response.text:
-            # Clean up the response by removing Markdown formatting
-            cleaned_response = re.sub(r'[*#]+', '', response.text)  # Remove *, **, #, etc.
-            cleaned_response = re.sub(r'(\n\s*)+', '\n', cleaned_response)  # Remove extra newlines
-            cleaned_response = re.sub(r'(\d+\.\s|[IVX]+\.\s)', '', cleaned_response)  # Remove numbered headings
+            cleaned_response = re.sub(r'[*#]+', '', response.text)
+            cleaned_response = re.sub(r'(\n\s*)+', '\n', cleaned_response)
+            cleaned_response = re.sub(r'(\d+\.\s|[IVX]+\.\s)', '', cleaned_response)
             cleaned_response = cleaned_response.strip()
             return jsonify({"response": cleaned_response, "type": "bot"})
         else:
             return jsonify({"response": "Sorry, I couldn't generate a response. Please try again or ask something else.", "type": "error"})
+
     except Exception as e:
         return jsonify({"response": f"Sorry, an error occurred: {str(e)}. Please try again later or ask a common question like 'What are your working hours?'", "type": "error"})
 
